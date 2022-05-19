@@ -1,0 +1,36 @@
+# Please see the README.md for instructions as to how to use and customize.
+
+# NOTE: This file does not build! No dockerfiles are set. See the README.md in this directory.
+---
+version: '3.8'
+services:
+
+  redis:
+    image: redis
+    hostname : redis
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+      
+  db:
+    image: postgres
+    hostname : pg
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+
+networks:
+  default:
+    name: default_network
+
+volumes:
+  pgdata:
+  redisdata:
