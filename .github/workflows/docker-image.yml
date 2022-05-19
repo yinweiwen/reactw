@@ -22,8 +22,10 @@ jobs:
     - name: compile
       run: cd api && npm install
     - name: compile web
-      run: cd web && npm install
+      run: cd web && npm install --legacy-peer-deps
+    - name: docker login
+      run: docker login --username=yww3571373 --password=${{ secrets.ALI_DOCKER_CREDENTIALS }} registry.cn-hangzhou.aliyuncs.com
     - name: Build the Docker API
-      run: cd api && docker build . --file Dockerfile --tag api:$(date +%s)
+      run: cd api && docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoapi:$(date +%s)
     - name: Build the Docker WEB
-      run: cd web && docker build . --file Dockerfile --tag web:$(date +%s)
+      run: cd web && docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoweb:$(date +%s)
