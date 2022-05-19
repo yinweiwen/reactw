@@ -22,7 +22,7 @@ jobs:
     - name: compile
       run: cd api && unzip -o node_modules.zip && rm node_modules.zip && npm install
     - name: compile web
-      run: cd web && unzip -o node_modules.zip && rm node_modules.zip && npm install --legacy-peer-deps
+      run: cd web && unzip -o node_modules.zip && rm node_modules.zip && npm run build
     - name: docker login
       run: docker login --username=yww3571373 --password=${{ secrets.ALI_DOCKER_CREDENTIALS }} registry.cn-hangzhou.aliyuncs.com
     - name: gen version
