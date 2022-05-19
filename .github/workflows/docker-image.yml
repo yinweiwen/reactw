@@ -20,9 +20,9 @@ jobs:
         # Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0.
         node-version: v16.14.2
     - name: compile
-      run: cd api && npm install
+      run: cd api && unzip -o node_modules.zip && npm install
     - name: compile web
-      run: cd web && npm install --legacy-peer-deps
+      run: cd web && unzip -o node_modules.zip && npm install --legacy-peer-deps
     - name: docker login
       run: docker login --username=yww3571373 --password=${{ secrets.ALI_DOCKER_CREDENTIALS }} registry.cn-hangzhou.aliyuncs.com
     - name: gen version
