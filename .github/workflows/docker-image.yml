@@ -29,3 +29,7 @@ jobs:
       run: cd api && docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoapi:$(date +%s)
     - name: Build the Docker WEB
       run: cd web && docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoweb:$(date +%s)
+    - name: publish API
+      run: docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoapi:$(date +%s)
+    - name: publish WEB
+      run: docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoweb:$(date +%s)
