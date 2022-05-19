@@ -1,0 +1,38 @@
+.header {
+    position          : relative;
+    height            : 65px;
+    min-width         : 520px;
+}
+
+.header-fold {
+    float       : left;
+    padding-left: 32px;
+    font-size   : 16px;
+}
+
+.header-title {
+    line-height: 60px;
+    display    : inline-block;
+    font-size  : 20px;
+    /* color      : #3E424C; */
+    text-shadow: 0 4px 3px rgba(54, 77, 108, 0.20);
+}
+
+.header-nav {
+    float       : right;
+}
+
+.header-nav-notification {
+    /* color    : #666; */
+    font-size: 16px;
+}
+
+.header-nav-user-img-wrapper {
+    display: inline;
+    margin : 14px 8px;
+}
+
+.header-nav-user-img {
+    width : 36px;
+    height: 36px;
+}
