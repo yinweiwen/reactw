@@ -1,3 +1,5 @@
 /web/node_modules
 /api/node_modules
 /web/log/development.txt
+/api/package-lock.json
+/web/package-lock.json
