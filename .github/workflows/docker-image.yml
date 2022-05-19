@@ -27,16 +27,16 @@ jobs:
       run: docker login --username=yww3571373 --password=${{ secrets.ALI_DOCKER_CREDENTIALS }} registry.cn-hangzhou.aliyuncs.com
     - name: gen version
       id: version
-      run: echo '$(date +%s)'
+      run: echo "::set-output name=number::$(date +%s)"
     - name: Build the Docker API
-      run: cd api && docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoapi:${{ version }}
+      run: cd api && docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoapi:${{ steps.version.outputs.number }}
     - name: Build the Docker WEB
-      run: cd web && docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoweb:${{ version }}
+      run: cd web && docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoweb:${{ steps.version.outputs.number }}
     - name: publish API
-      run: docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoapi:${{ version }}
+      run: docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoapi:${{ steps.version.outputs.number }}
     - name: publish WEB
-      run: docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoweb:${{ version }}
+      run: docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoweb:${{ steps.version.outputs.number }}
     - name: Latest API
-      run: docker tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoapi:${{ version }} registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoapi:latest && docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoapi:latest
+      run: docker tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoapi:${{ steps.version.outputs.number }} registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoapi:latest && docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoapi:latest
     - name: Latest WEB
-      run: docker tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoweb:${{ version }} registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoweb:latest && docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoweb:latest
+      run: docker tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoweb:${{ steps.version.outputs.number }} registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoweb:latest && docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/public/demoweb:latest
