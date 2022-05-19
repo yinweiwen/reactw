@@ -7,7 +7,9 @@ async function addTask(ctx, next) {
         }
         const data = ctx.request.body
         const models = ctx.fs.dc.models;
-        data.user = userInfo?.id
+        if (userInfo) {
+            data.user = userInfo.id
+        }
 
         ctx.body = await models.Tasks.create(data)
         ctx.status = 200;
