@@ -35,8 +35,15 @@ $ docker login --username=yww3571373 registry.cn-hangzhou.aliyuncs.com
 $ docker pull registry.cn-hangzhou.aliyuncs.com/yinweiwen/public:[镜像版本号]
 
 # 推送镜像
-$ docker login --username=yww3571373 registry.cn-hangzhou.aliyuncs.com
+$ docker login --username=yww3571373 --password=${{secrets.ALI_DOCKER_CREDENTIALS }} registry.cn-hangzhou.aliyuncs.com
 $ docker tag [ImageId] registry.cn-hangzhou.aliyuncs.com/yinweiwen/public:[镜像版本号]
 $ docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/public:[镜像版本号]
+```
+
+
+
+workflow github
+
+```xml
 ```
 
