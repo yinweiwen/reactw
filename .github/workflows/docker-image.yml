@@ -20,8 +20,10 @@ jobs:
         # Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0.
         node-version: v16.14.2
     - name: compile
-      run: cd /api && npm install
+      run: cd api && npm install
     - name: compile web
-      run: cd /web && npm install
-    - name: Build the Docker image
-      run: cd /api && docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      run: cd web && npm install
+    - name: Build the Docker API
+      run: cd api && docker build . --file Dockerfile --tag api:$(date +%s)
+    - name: Build the Docker WEB
+      run: cd web && docker build . --file Dockerfile --tag web:$(date +%s)
