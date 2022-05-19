@@ -29,14 +29,10 @@ jobs:
       id: version
       run: echo "::set-output name=number::$(date +%s)"
     - name: Build the Docker API
-      run: cd api && docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/github/demoapi:${{ steps.version.outputs.number }}
+      run: cd api && docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/github:demoapi-${{ steps.version.outputs.number }}
     - name: Build the Docker WEB
-      run: cd web && docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/github/demoweb:${{ steps.version.outputs.number }}
+      run: cd web && docker build . --file Dockerfile --tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/github:demoweb-${{ steps.version.outputs.number }}
     - name: publish API
-      run: docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/github/demoapi:${{ steps.version.outputs.number }}
+      run: docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/github:demoapi-${{ steps.version.outputs.number }}
     - name: publish WEB
-      run: docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/github/demoweb:${{ steps.version.outputs.number }}
-    - name: Latest API
-      run: docker tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/github/demoapi:${{ steps.version.outputs.number }} registry.cn-hangzhou.aliyuncs.com/yinweiwen/github/demoapi:latest && docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/github/demoapi:latest
-    - name: Latest WEB
-      run: docker tag registry.cn-hangzhou.aliyuncs.com/yinweiwen/github/demoweb:${{ steps.version.outputs.number }} registry.cn-hangzhou.aliyuncs.com/yinweiwen/github/demoweb:latest && docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/github/demoweb:latest
+      run: docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/github:demoweb-${{ steps.version.outputs.number }}
