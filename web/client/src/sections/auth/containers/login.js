@@ -46,41 +46,38 @@ const Login = props => {
 
     return (
         <div className='login'>
-            <div className='left'></div>
-            <div className='right'>
-                <div className='loginBox'>
-                    <h1>智慧应急</h1>
-                    <Form onKeyDown={enterHandler}>
+            <div className='loginBox'>
+                <h1>Peter's Demon</h1>
+                <Form onKeyDown={enterHandler}>
 
-                        <FormItem>
-                            <div className='loginFormTit'>用户名</div>
-                            <Input
-                                className='loginInp'
-                                type="text"
-                                value={username}
-                                // placeholder="用户名"
-                                onChange={e => {
-                                    setUserName(e.target.value)
-                                    setInputChanged(true)
-                                }}
-                            />
-                        </FormItem>
-                        <div className='loginFormTit'>密码</div>
-                        <FormItem>
-                            <Input
-                                className='loginInp'
-                                type="password"
-                                value={password}
-                                // placeholder="密码"
-                                onChange={e => {
-                                    setPassword(e.target.value)
-                                    setInputChanged(true)
-                                }}
-                            />
-                        </FormItem>
-                    </Form>
-                    <Button type="primary" className='loginBtn' loading={isRequesting} onClick={handleLogin}>登录</Button>
-                </div>
+                    <FormItem>
+                        <div className='loginFormTit'>用户名</div>
+                        <Input
+                            className='loginInp'
+                            type="text"
+                            value={username}
+                            // placeholder="用户名"
+                            onChange={e => {
+                                setUserName(e.target.value)
+                                setInputChanged(true)
+                            }}
+                        />
+                    </FormItem>
+                    <div className='loginFormTit'>密码</div>
+                    <FormItem>
+                        <Input
+                            className='loginInp'
+                            type="password"
+                            value={password}
+                            // placeholder="密码"
+                            onChange={e => {
+                                setPassword(e.target.value)
+                                setInputChanged(true)
+                            }}
+                        />
+                    </FormItem>
+                </Form>
+                <Button type="primary" className='loginBtn' loading={isRequesting} onClick={handleLogin}>登录</Button>
             </div>
         </div>
     );

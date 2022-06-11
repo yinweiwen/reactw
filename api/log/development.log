@@ -7013,3 +7013,9 @@
 2022-05-15 23:11:19.836 - error: path: /task/catalog, error: 重名配置
 2022-05-15 23:11:50.820 - error: path: /task/6/catalog, error: 重名配置
 2022-05-15 23:11:53.443 - error: path: /task/6/catalog, error: 重名配置
+2022-06-10 20:34:17.957 - debug: [FS-LOGGER] Init.
+2022-06-10 20:34:20.491 - info: [FS-ATTACHMENT] Inject attachment mw into router.
+2022-06-10 20:34:20.493 - info: [FS-AUTH] Inject auth and api mv into router.
+2022-06-10 20:34:52.930 - debug: [FS-LOGGER] Init.
+2022-06-10 20:34:53.256 - info: [FS-ATTACHMENT] Inject attachment mw into router.
+2022-06-10 20:34:53.257 - info: [FS-AUTH] Inject auth and api mv into router.

@@ -60,7 +60,7 @@ const Header = props => {
                     {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                 </span>
                 <div className={styles['header-title']} style={{}}>
-                    智慧应急
+                    Peter's Demon
                     {/* <span>{user.orgName}</span> */}
                 </div>
             </div>

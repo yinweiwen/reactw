@@ -15,7 +15,7 @@
             "args": [
                 "-p 14000",
                 "-f http://localhost:14000",
-                "-g postgres://Administrator:123@localhost:5432/demo",//jdbc:postgresql://localhost:5432/demo
+                "-g postgres://postgres:Poi3571373@106.15.89.47:5432/demo",//jdbc:postgresql://localhost:5432/demo
             ]
         },
         {
