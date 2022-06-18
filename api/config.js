@@ -30,18 +30,7 @@ if (!FS_UNIAPP_DB) {
 const product = {
     port: flags.port || 8080,
     staticDirs: ['static'],
-    mws: [
-        {
-            entry: require('@fs/attachment').entry,
-            opts: {
-                local: {
-                    origin: FS_UNIAPP_FC_LOCAL_SVR_ORIGIN || `http://localhost:${flags.port || 8080}`,
-                    rootPath: 'static',
-                    childPath: 'upload',
-                },
-                maxSize: 104857600, // 100M
-            }
-        }, {
+    mws: [{
             entry: require('./app').entry,
             opts: {
                 exclude: [], // 不做认证的路由，也可以使用 exclude: ["*"]  跳过所有路由
