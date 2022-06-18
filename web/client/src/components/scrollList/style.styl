@@ -1,0 +1,26 @@
+.loader
+  width: 100%
+  height: 100%
+  &__content
+    width: 100%;
+    height: 100%;
+    padding: 10px $separation $separation $separation
+  &__end
+    //text-align: center
+    //padding-top: 15px
+    position: absolute
+    left:53%
+    bottom: 0
+    //height: 45px
+    //clear: both
+  &__disappear
+    @extend .loader__end
+    opacity: 0
+    animation: disappear 5s ease 
+
+@keyframes disappear
+  0%
+    opacity: 1
+  100%
+    opacity: 0
+

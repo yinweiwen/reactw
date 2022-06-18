@@ -11,6 +11,9 @@ export function getNavItem(user, dispatch) {
             <Menu.Item key="listp">
                 <Link to="/pic/listp">列表</Link>
             </Menu.Item>
+            <Menu.Item key="listpc">
+                <Link to="/pic/listpc">Scroll</Link>
+            </Menu.Item>
         </SubMenu>
     );
 }

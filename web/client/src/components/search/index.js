@@ -166,7 +166,7 @@ const Search = (props) => {
             className='smart-seal-search-form'
             onFinish={onFinish}
             initialValues={getinitialValues()}
-            validateMessages={Constans.defaultValidateMessages}
+            validateMessages={''}
         >
             <Row gutter={16}>
                 <Col span={colSpan ? colSpan.label : 18}>

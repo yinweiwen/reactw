@@ -1,5 +1,5 @@
 'use strict';
-import { PicList } from './containers';
+import { PicList,PicListScroll } from './containers';
 
 export default [{
     type: 'inner',
@@ -12,6 +12,11 @@ export default [{
             key: 'listp',
             component: PicList,
             breadcrumb: 'beauty',
+        },{
+            path: '/listpc',
+            key: 'listpc',
+            component: PicListScroll,
+            breadcrumb: 'beautyc',
         }]
     }
 }];

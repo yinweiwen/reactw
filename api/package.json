@@ -13,7 +13,6 @@
     "license": "MIT",
     "repository": {},
     "dependencies": {
-        "@fs/attachment": "^1.0.0",
         "archiver": "3.0.0",
         "args": "^3.0.7",
         "async-busboy": "^0.7.0",

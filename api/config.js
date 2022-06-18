@@ -11,11 +11,15 @@ const dev = process.env.NODE_ENV == 'development';
 args.option(['p', 'port'], '启动端口');
 args.option(['g', 'pg'], 'postgre服务URL');
 args.option(['f', 'fileHost'], '文件中心本地化存储: WebApi 服务器地址(必填), 该服务器提供文件上传Web服务');
+args.option(['a', 'qiniuAk'], 'qiniu AK');
+args.option(['s', 'qiniuSk'], 'qiniu SK');
 
 const flags = args.parse(process.argv);
 
 const FS_UNIAPP_DB = process.env.FS_UNIAPP_DB || flags.pg;
 const FS_UNIAPP_FC_LOCAL_SVR_ORIGIN = process.env.FS_UNIAPP_FC_LOCAL_SVR_ORIGIN || flags.fileHost;
+const QINIU_AK = process.env.QINIU_AK || flags.qiniuAk || 'z2qOOYBNuA1xBCS0RzJVn8jU41Nw2ZbXoUvQjMut';
+const QINIU_SK = process.env.QINIU_SK || flags.qiniuSk;
 
 if (!FS_UNIAPP_DB) {
     console.log('缺少启动参数，异常退出');
@@ -41,6 +45,14 @@ const product = {
             entry: require('./app').entry,
             opts: {
                 exclude: [], // 不做认证的路由，也可以使用 exclude: ["*"]  跳过所有路由
+            }
+        },{
+            entry: require('./utils/qiniu').entry,
+            opts: {
+                url: "http://wallhaven.yinweiwen.cn/",
+                urlThumbnail: "http://wallhaven.yinweiwen.cn/Thumbnail/",
+                ak: QINIU_AK,
+                sk: QINIU_SK
             }
         }
     ],

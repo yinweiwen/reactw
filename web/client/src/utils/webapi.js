@@ -39,6 +39,10 @@ export const ApiTable = {
     getTaskCatalogs: 'task/catalogs',
     getTaskTypes: 'task/types',
     getTasks: 'task/list',
+
+    // pics
+    getPicList: 'images/list',
+    delPic: 'image/del',
     
     //Task配置
     addTaskConfig: 'task/config',
