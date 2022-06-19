@@ -43,7 +43,13 @@ export const ApiTable = {
     // pics
     getPicList: 'images/list',
     delPic: 'image/del',
-    
+
+    // gtps
+    getGtps: 'gtp/list',
+    addGtp: 'gtp',
+    editGtp: 'gtp/{gtpid}',
+    delGtp: 'gtp/{gtpid}',
+
     //Task配置
     addTaskConfig: 'task/config',
     getTaskConfig: 'task/config',
