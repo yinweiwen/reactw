@@ -36,4 +36,5 @@ module.exports.models = function (dc) { // dc = { orm: Sequelize对象, ORM: Seq
     require('./models/task_catalog')(dc);
     require('./models/task_type')(dc);
     require('./models/tasks')(dc);
+    require('./models/gtps')(dc);
 };

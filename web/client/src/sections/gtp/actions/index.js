@@ -1,7 +1,7 @@
 'use strict';
 
-import * as pics from './pics'
+import * as gtps from './gtps'
 
 export default {
-    ...pics
+    ...gtps
 }

@@ -49,6 +49,7 @@ export const ApiTable = {
     addGtp: 'gtp',
     editGtp: 'gtp/{gtpid}',
     delGtp: 'gtp/{gtpid}',
+    qiniuToken: 'qiniu/token',
 
     //Task配置
     addTaskConfig: 'task/config',

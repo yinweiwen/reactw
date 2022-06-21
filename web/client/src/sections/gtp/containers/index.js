@@ -1,6 +1,5 @@
 'use strict';
 
-import PicList from './list';
-import PicListScroll from './listScroll'
+import GtpList from './gtps';
 
-export { PicList,PicListScroll };
+export { GtpList }

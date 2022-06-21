@@ -82,6 +82,7 @@
     "koa-view": "^2.1.4",
     "mini-dynamic-antd-theme": "^0.5.3",
     "moment": "^2.22.0",
+    "qiniu-js": "^3.4.0",
     "react-color": "^2.19.3",
     "react-router-breadcrumbs-hoc": "^4.0.1",
     "react-sortable-hoc": "^2.0.0",

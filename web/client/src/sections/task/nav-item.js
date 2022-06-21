@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Menu } from 'antd';
-import { SettingOutlined } from '@ant-design/icons';
+import { HeartOutlined } from '@ant-design/icons';
 
 const SubMenu = Menu.SubMenu;
 
 export function getNavItem(user, dispatch) {
     return (
-        <SubMenu key="task" icon={<SettingOutlined />} title={'举个栗子'}>
+        <SubMenu key="task" icon={<HeartOutlined />} title={'举个栗子'}>
             <Menu.Item key="list">
                 <Link to="/task/list">举个棒子</Link>
             </Menu.Item>

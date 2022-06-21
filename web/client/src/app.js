@@ -6,6 +6,7 @@ import Auth from './sections/auth';
 import Report from './sections/report';
 import Task from './sections/task';
 import Pic from './sections/picture';
+import Gtp from './sections/gtp';
 import Organization from './sections/organization'
 
 const App = props => {
@@ -18,7 +19,7 @@ const App = props => {
     return (
         <Layout
             title={projectName}
-            sections={[Auth, Task, Pic]}
+            sections={[Auth, Task, Pic, Gtp]}
         />
     )
 }

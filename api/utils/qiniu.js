@@ -54,11 +54,19 @@ let initClient = (config) => {
     return bucketManager;
 };
 
+function getMac(opts) {
+    let ak = opts.ak
+    let sk = opts.sk || 'p-B0S_Xld8jLQLBRdBJvpK9-nG1dHTfyyjc8cZjL'
+    let mac = new qiniu.auth.digest.Mac(ak, sk);
+    return mac;
+}
+
 module.exports = {
     entry: (app, router, opts) => {
         let bucketManager = initClient(opts);
         // init redis client and inject it into app(app.fs.redis)
         app.fs = app.fs || {};
         app.fs.qiniu = bucketManager;
+        app.fs.qiniuMac = getMac(opts);
     }
 };
