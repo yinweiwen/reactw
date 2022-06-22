@@ -69,6 +69,7 @@
     "@peace/components": "0.0.35",
     "@peace/utils": "0.0.37",
     "antd": "^4.19.2",
+    "antd-img-crop": "^4.2.3",
     "antd-theme-generator": "^1.2.8",
     "args": "^5.0.1",
     "array-move": "^3.0.1",

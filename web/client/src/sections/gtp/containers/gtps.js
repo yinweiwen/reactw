@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { InfoCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { InfoCircleOutlined, SaveOutlined, PlusOutlined, LoadingOutlined, PoweroffOutlined, DeleteOutlined } from '@ant-design/icons'
 import { connect } from 'react-redux';
-import { Spin, Card, Row, Col, Select, Input, Modal, Image, Upload, Drawer, Popconfirm, Button, Tag, Space, Dropdown, Form, message } from 'antd';
+import { Spin, Tooltip, Card, Row, Col, Select, Input, Modal, Image, Upload, Drawer, Popconfirm, Button, Tag, Space, Dropdown, Form, message } from 'antd';
 import '../style.less';
 import moment from 'moment';
 import reducerHelper from '@peace/utils/lib/src/reducerHelper';
 const { Meta } = Card;
 import * as qiniu from "qiniu-js"
+import ImgCrop from 'antd-img-crop';
 // import DefaultCover from '../../../../assets/images/avatar/1.png';
 
 const qiniuUrl = 'http://guita.yinweiwen.cn/'
@@ -18,10 +19,14 @@ const GtpList = (props) => {
     const [visible, setVisible] = useState(false)
     const [gtpInfo, setGtpInfo] = useState({})
     const [form] = Form.useForm()
+    const [coverImage, setCoverImage] = useState();
+    const [coverLoading, setCoverLoading] = useState(false);
 
     useEffect(() => {
         // 在这里对表单初始化值做修改映射
-        let g = { ...gtpInfo, contentOrgs: gtpImgs(gtpInfo), coverOrg: gtpCover(gtpInfo) }
+        let coverOrg = gtpCover(gtpInfo)
+        setCoverImage(coverOrg)
+        let g = { ...gtpInfo, contentOrgs: gtpImgs(gtpInfo), coverOrg: coverOrg }
         form.setFieldsValue(g)
     }, [form, gtpInfo])
 
@@ -59,7 +64,10 @@ const GtpList = (props) => {
     const onfinish = (v) => {
         if (v.contentOrgs) {
             v.content = v.contentOrgs.map(c => c.key)
-            v.cover = v.converOrg ? v.converOrg.key : null;
+            if (coverImage && coverImage.key) {
+                v.cover = coverImage.key;
+            }
+            // v.cover = v.coverOrg ? v.coverOrg.key : null;
             delete (v, 'contentOrgs')
             if (isEdit()) {
                 dispatch(gtp.editGtp(v, gtpInfo.id))
@@ -101,6 +109,18 @@ const GtpList = (props) => {
     const uploadButton = (
         <div>
             <PlusOutlined />
+            <div
+                style={{
+                    marginTop: 8,
+                }}
+            >
+                Upload
+            </div>
+        </div>
+    );
+    const uploadCoverButton = (
+        <div>
+            {coverLoading ? <LoadingOutlined /> : <PlusOutlined />}
             <div
                 style={{
                     marginTop: 8,
@@ -185,7 +205,7 @@ const GtpList = (props) => {
     };
 
 
-    const beforeUploadConver = (file) => {
+    const beforeUploadCover = (file) => {
         const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
 
         if (!isJpgOrPng) {
@@ -201,18 +221,46 @@ const GtpList = (props) => {
         return isJpgOrPng && isLt2M;
     };
 
+    const handleCoverDone = (e) => {
+        console.log(e)
+        if (e.file.status === 'done') {// 状态有：uploading done error removed，被 beforeUpload 拦截的文件没有 status 属性
+            getBase64(e.file.originFileObj, (url) => {
+                setCoverLoading(false);
+                setCoverImage({ url: url, key: e.file.name });
+            });
+        } else if (e.file.status === 'uploading') {
+            setCoverLoading(true);
+        }
+    }
+
     function drawerContent(p) {
         return (
             <>
-                <Drawer width={480} placement="right" closable={false} onClose={onClose} visible={visible}>
-                    <p
-                        className="site-description-item-profile-p"
-                        style={{
-                            marginBottom: 24,
-                        }}
-                    >
-                        {isEdit() ? '编辑' : '新增'}吉他谱
-                    </p>
+                <Drawer
+                    title={isEdit() ? '编辑吉他谱' : '新增吉他谱'}
+                    width={480}
+                    placement="right"
+                    // closable={false}
+                    onClose={onClose}
+                    visible={visible}
+                    extra={
+                        <Space>
+                            {
+                                isEdit() &&
+                                <Popconfirm
+                                    placement="topRight"
+                                    title={"确认删除吉他谱吗?"}
+                                    onConfirm={() => {
+                                        delGtp(p)
+                                    }}>
+                                    <Tooltip title="删除吉他谱">
+                                        <Button shape="circle" type="primary" danger icon={<DeleteOutlined />} />
+                                    </Tooltip>
+                                </Popconfirm>
+                            }
+                        </Space>
+                    }
+                >
                     <Form
                         name='gtpinfo'
                         form={form}
@@ -239,23 +287,36 @@ const GtpList = (props) => {
                             <Input placeholder="20字以内" maxLength="20" />
                         </Form.Item>
                         <Form.Item
-                            name="converOrg"
+                            name="coverOrg"
                             label="封面"
                             getValueFromEvent={(e) => e.file}
                             valuePropName="file"
                         >
-                            <Upload
-                                name="cover"
-                                action="https://qiniup.com"
-                                listType="picture-card"
-                                showUploadList={true}
-                                accept="image/png, image/jpeg, image/jpg"
-                                customRequest={customRequest}
-                                onPreview={handlePreview}
-                                beforeUpload={beforeUploadConver}
-                            >
-                                {uploadButton}
-                            </Upload>
+                            <ImgCrop rotate
+                                quality={0.4}>
+                                <Upload
+                                    name="cover"
+                                    action="https://qiniup.com"
+                                    listType="picture-card"
+                                    showUploadList={false}
+                                    accept="image/png, image/jpeg, image/jpg"
+                                    customRequest={customRequest}
+                                    onPreview={handlePreview}
+                                    beforeUpload={beforeUploadCover}
+                                    onChange={handleCoverDone}
+                                >
+                                    {(coverImage && coverImage.key) ? (
+                                        <img
+                                            src={coverImage.url}
+                                            alt={coverImage.key}
+                                            style={{
+                                                width: '100%',
+                                            }}
+                                        />
+                                    ) : (
+                                        uploadCoverButton
+                                    )}
+                                </Upload></ImgCrop>
                         </Form.Item>
                         <Form.Item
                             name="contentOrgs"
@@ -284,25 +345,16 @@ const GtpList = (props) => {
                                 span: 16,
                             }}
                         >
-                            <Button type="primary" htmlType="submit">
-                                提交
-                            </Button>
-                            <Button htmlType="button" onClick={() => setGtpInfo({})}>
-                                重置
-                            </Button>
+                            <Space>
+                                <Button type="primary" htmlType="submit">
+                                    提交
+                                </Button>
+                                <Button htmlType="button" onClick={() => setGtpInfo({})}>
+                                    重置
+                                </Button>
+                            </Space>
                         </Form.Item>
                     </Form>
-                    {
-                        isEdit() &&
-                        <Popconfirm
-                            placement="topRight"
-                            title={"确认删除吉他谱吗?"}
-                            onConfirm={() => {
-                                delGtp(p)
-                            }}>
-                            <Button type="primary" danger>删除吉他谱</Button>
-                        </Popconfirm>
-                    }
                 </Drawer>
                 <Modal visible={previewVisible} title={previewTitle} footer={null} onCancel={handlePreviewCancel}>
                     <img alt="preview" style={{ width: '100%' }} src={previewImage} />
