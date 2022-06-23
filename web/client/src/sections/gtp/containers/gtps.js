@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { InfoCircleOutlined, SaveOutlined, PlusOutlined, LoadingOutlined, PoweroffOutlined, DeleteOutlined } from '@ant-design/icons'
+import { InfoCircleOutlined, EditOutlined, SaveOutlined, PlusOutlined, LoadingOutlined, PoweroffOutlined, DeleteOutlined } from '@ant-design/icons'
 import { connect } from 'react-redux';
 import { Spin, Tooltip, Card, Row, Col, Select, Input, Modal, Image, Upload, Drawer, Popconfirm, Button, Tag, Space, Dropdown, Form, message } from 'antd';
 import '../style.less';
@@ -9,6 +9,7 @@ const { Meta } = Card;
 import * as qiniu from "qiniu-js"
 import ImgCrop from 'antd-img-crop';
 // import DefaultCover from '../../../../assets/images/avatar/1.png';
+import { push } from 'react-router-redux'
 
 const qiniuUrl = 'http://guita.yinweiwen.cn/'
 
@@ -374,7 +375,8 @@ const GtpList = (props) => {
                             <Card
                                 hoverable
                                 actions={[
-                                    <InfoCircleOutlined key='info' onClick={() => showInfo(p)} />
+                                    <InfoCircleOutlined key='info' onClick={() => { dispatch(push(`/gtp/view/${p.id}`, { gtpview: p })) }} />,
+                                    <EditOutlined key='edit' onClick={() => showInfo(p)} />
                                 ]}
                                 cover={<img alt="cover" src={gtpCover(p).url || 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png'} />}
                             >

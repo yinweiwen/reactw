@@ -1,5 +1,5 @@
 'use strict';
-import { GtpList } from './containers';
+import { GtpList, GtpView } from './containers';
 
 export default [{
     type: 'inner',
@@ -12,7 +12,12 @@ export default [{
             path: '/gtpls',
             key: 'gtpls',
             component: GtpList,
-            breadcrumb: '列表',
+            breadcrumb: '列表'
+        }, {
+            path: '/view/:id',
+            key: 'gtpview',
+            component: GtpView,
+            breadcrumb: '吉他谱查看',
         }]
     }
 }];

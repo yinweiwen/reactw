@@ -32,7 +32,7 @@ const LayoutContainer = props => {
     const { dispatch, msg, user, copyright, children, sections, clientWidth, clientHeight,
         location, match, routes, history } = props
     const [themeName, setThemeName] = useState(localStorage.getItem("theme-name") || 'light')
-    const [collapsed, setCollapsed] = useState(false)
+    const [collapsed, setCollapsed] = useState(true)
 
     NProgress.start();
 
