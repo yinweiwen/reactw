@@ -27,7 +27,7 @@ const Login = props => {
 
     useEffect(() => {
         if (user && user.authorized) {
-            dispatch(push('/report/download'));
+            dispatch(push('/gtp'));
         }
     }, [user])
 

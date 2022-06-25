@@ -3,11 +3,12 @@
 import { basicAction } from '@peace/utils'
 import { ApiTable } from '$utils'
 
-export function getGtps() {
+export function getGtps(query) {
     return dispatch => basicAction({
         type: 'get',
         dispatch: dispatch,
         actionType: 'GET_GTPS',
+        query: query,
         url: `${ApiTable.getGtps}`,
         msg: { error: '获取列表失败' },
         reducer: { name: 'gtps' }

@@ -93,7 +93,7 @@ async function getList(ctx, next) {
     try {
         const { fs: { api: { userInfo } } } = ctx
         const models = ctx.fs.dc.models;
-        const { creatTime, gtpName, limit, offset } = ctx.query;
+        const { creatTime, gtpName, limit, offset, search } = ctx.query;
 
         let where = {};
         if (creatTime) {
@@ -103,10 +103,23 @@ async function getList(ctx, next) {
             }
         }
 
-        if (gtpName) {
-            where.name = {
-                $iLike: `%${gtpName}%`
-            }
+        if (search) {
+            where.$or = [
+                {
+                    name: {
+                        $iLike: `%${search}%`
+                    }
+                },
+                {
+                    artist: {
+                        $iLike: `%${search}%`
+                    },
+                }, {
+                    desc: {
+                        $iLike: `%${search}%`
+                    },
+                }
+            ]
         }
 
         let findObj = {

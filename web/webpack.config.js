@@ -28,7 +28,8 @@ module.exports = {
             crypto: false,
             $utils: path.resolve(__dirname, 'client/src/utils/'),
             $components: path.resolve(__dirname, 'client/src/components/'),
-            $themes: path.resolve(__dirname, 'client/src/themes/')
+            $themes: path.resolve(__dirname, 'client/src/themes/'),
+            $assets: path.resolve('client/assets'),
         }
     },
     plugins: [
@@ -61,7 +62,7 @@ module.exports = {
             use: 'babel-loader',
             include: [PATHS.app, path.resolve(__dirname, 'node_modules', '@peace')],
         }, {
-            test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,
+            test: /\.(png|jpg|jpeg|eot|woff|woff2|svg|ttf)([\?]?.*)$/,
             loader: "file-loader"
         }]
     }

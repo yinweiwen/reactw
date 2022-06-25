@@ -3,18 +3,23 @@ import { InfoCircleOutlined, EditOutlined, SaveOutlined, PlusOutlined, LoadingOu
 import { connect } from 'react-redux';
 import { Spin, Tooltip, Card, Row, Col, Select, Input, Modal, Image, Upload, Drawer, Popconfirm, Button, Tag, Space, Dropdown, Form, message } from 'antd';
 import '../style.less';
+import './style.less';
 import moment from 'moment';
 import reducerHelper from '@peace/utils/lib/src/reducerHelper';
 const { Meta } = Card;
 import * as qiniu from "qiniu-js"
 import ImgCrop from 'antd-img-crop';
-// import DefaultCover from '../../../../assets/images/avatar/1.png';
+// import DefaultCover from '@assets/images/avatar/1.png';
 import { push } from 'react-router-redux'
+import { useRequest } from 'ahooks';
+
 
 const qiniuUrl = 'http://guita.yinweiwen.cn/'
 
+const PageSize = 100;
+
 const GtpList = (props) => {
-    const { dispatch, actions, loading, gtps } = props
+    const { dispatch, actions, loading, gtps, gtpcount } = props
 
     const { gtp } = actions;
     const [visible, setVisible] = useState(false)
@@ -22,6 +27,11 @@ const GtpList = (props) => {
     const [form] = Form.useForm()
     const [coverImage, setCoverImage] = useState();
     const [coverLoading, setCoverLoading] = useState(false);
+    const [curgtps, setCurGtps] = useState([])
+
+    // 分页请求
+    const [curPage, setCurPage] = useState(0)
+
 
     useEffect(() => {
         // 在这里对表单初始化值做修改映射
@@ -32,10 +42,47 @@ const GtpList = (props) => {
     }, [form, gtpInfo])
 
     useEffect(() => {
-        dispatch(gtp.getGtps({
-            limit: 100
-        }))
+        if (!gtps || gtps.length == 0) return;
+        let ls = curgtps || []
+        setCurGtps(ls.concat(gtps.filter(a => !ls.find(ele => ele.id == a.id))))
+    }, [gtps])
+
+    useEffect(() => {
+        if (curPage == 0) {
+            console.log('dispatch on load')
+            dispatch(gtp.getGtps({
+                limit: PageSize,
+                offset: curPage
+            }))
+        }
     }, [])
+
+    const refresh = () => {
+        setCurPage(0)
+        setCurGtps([])
+        dispatch(gtp.getGtps({
+            limit: PageSize,
+            offset: curPage * PageSize
+        }))
+    }
+
+    const loadMore = () => {
+        dispatch(gtp.getGtps({
+            limit: PageSize,
+            offset: (curPage + 1) * PageSize
+        }))
+        setCurPage(curPage + 1)
+    }
+
+    const onSearch = (v) => {
+        setCurPage(0)
+        setCurGtps([])
+        dispatch(gtp.getGtps({
+            limit: PageSize,
+            offset: curPage * PageSize,
+            search: v
+        }))
+    }
 
     function showInfo(p) {
         setGtpInfo(p);
@@ -50,7 +97,11 @@ const GtpList = (props) => {
         console.log(`deleted ${p}`)
     }
 
-    const loadMore = () => { console.log('load more...') }
+    const addGtp = () => {
+        setGtpInfo({});
+        setVisible(true);
+    }
+
     const formItemLayout = {
         labelCol: { span: 6 },
         wrapperCol: { span: 14 },
@@ -75,7 +126,7 @@ const GtpList = (props) => {
                     .then(res => {
                         if (res.success) {
                             onClose()
-                            dispatch(gtp.getGtps())
+                            refresh()
                         }
                     })
             } else {
@@ -83,7 +134,7 @@ const GtpList = (props) => {
                     .then(res => {
                         if (res.success) {
                             onClose()
-                            dispatch(gtp.getGtps())
+                            refresh()
                         }
                     })
             }
@@ -336,6 +387,7 @@ const GtpList = (props) => {
                                 accept="image/png, image/jpeg, image/jpg"
                                 customRequest={customRequest}
                                 onPreview={handlePreview}
+                                multiple
                             >
                                 {uploadButton}
                             </Upload>
@@ -364,31 +416,50 @@ const GtpList = (props) => {
         )
     }
 
+    const linkToGtpView = (p) => {
+        dispatch(push(`/gtp/view/${p.id}`, { gtpview: p }))
+    }
     return (
-        <Spin tip='loading' spinning={loading}>
-            <Row
-                gutter={[16, 16]}
-            >
-                {
-                    gtps.map(p => (
-                        <Col span={4} key={p.id}>
-                            <Card
-                                hoverable
-                                actions={[
-                                    <InfoCircleOutlined key='info' onClick={() => { dispatch(push(`/gtp/view/${p.id}`, { gtpview: p })) }} />,
-                                    <EditOutlined key='edit' onClick={() => showInfo(p)} />
-                                ]}
-                                cover={<img alt="cover" src={gtpCover(p).url || 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png'} />}
-                            >
-                                <Meta title={p.name} description={p.desc} />
-                            </Card>
-                        </Col>
-                    ))
-                }
-            </Row>
-            <Button type="primary" onClick={loadMore}>加载更多</Button>
-            {drawerContent(gtpInfo)}
-        </Spin>
+        <>
+            <div className='search'>
+                <Input.Search
+                    placeholder="搜索歌曲名、艺术家、其他备注文本"
+                    allowClear
+                    enterButton="搜索"
+                    style={{
+                        width: 500,
+                        marginBottom: 16,
+                    }}
+                    loading={loading}
+                    onSearch={onSearch}>
+
+                </Input.Search>
+                <Button type="primary" style={{ marginLeft: "20px", marginBottom: 16, }} onClick={addGtp}>添加</Button>
+            </div>
+            <Spin tip='loading' spinning={loading}>
+                <Row
+                    gutter={[16, 16]}
+                >
+                    {
+                        curgtps.map(p => (
+                            <Col span={4} key={p.id}>
+                                <Card
+                                    hoverable
+                                    actions={[
+                                        <InfoCircleOutlined key='info' onClick={() => { linkToGtpView(p) }} />,
+                                        <EditOutlined key='edit' onClick={() => showInfo(p)} />
+                                    ]}
+                                    cover={<img alt="cover" src={gtpCover(p).url || 'http://guita.yinweiwen.cn/default_cover.jpg'} onClick={() => linkToGtpView(p)} />}
+                                >
+                                    <Meta title={p.name} description={p.desc} />
+                                </Card>
+                            </Col>
+                        ))
+                    }
+                </Row>
+                {((curPage + 1) * PageSize < gtpcount) ? <Button type="primary" onClick={loadMore}>加载更多</Button> : null}
+                {drawerContent(gtpInfo)}
+            </Spin></>
     )
     // https://blog.csdn.net/wscwj8/article/details/105691170
 

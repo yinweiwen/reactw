@@ -10,10 +10,18 @@ import * as qiniu from "qiniu-js"
 import ImgCrop from 'antd-img-crop';
 // import DefaultCover from '../../../../assets/images/avatar/1.png';
 import { push } from 'react-router-redux'
+import ReactPlayer from 'react-player'
+
 
 import './style.less';
 
 const qiniuUrl = 'http://guita.yinweiwen.cn/'
+
+const VideoTypes=['mp4','mov','wmv','avi','flv','avchd','mkv','f4v','swf']
+
+const JudgeIsVideo=(filename)=>{
+    return VideoTypes.includes( filename.split('.').pop().toLowerCase())
+}
 
 const GtpView = (props) => {
     const { dispatch, actions, loading } = props
@@ -111,33 +119,43 @@ const GtpView = (props) => {
 
     function getInnerPage() {
         return (
-            pages[segValue - 1]?.contents?.map(p => (
-                // <div
-                //     className='two'>
-                    <Image
-                        key={p.key}
-                        preview={{
-                            visible: false,
-                        }}
-                        height="800px"
-                        width="50%"
-                        style={{
-                            padding: "0 20px"
-                        }}
-                        src={p.url}
-                        onClick={() => setPreviewVisible(true)}
-                    />
-                // </div>
+            pages[segValue - 1]?.contents?.map(p => {
+                if (!JudgeIsVideo(p.url)) {
+                    return (
+                        // <div
+                        //     className='two'>
+                        <Image
+                            key={p.key}
+                            preview={{
+                                visible: false,
+                            }}
+                            height="800px"
+                            width="50%"
+                            style={{
+                                padding: "0 20px"
+                            }}
+                            src={p.url}
+                            onClick={() => setPreviewVisible(true)}
+                        />
+                        // </div>
 
-                // <img
-                //     // width="50%"
-                //     height="800px"
-                //     style={{
-                //         padding: "0 20px"
-                //     }}
-                //     key={p.key}
-                //     src={p.url}></img>
-            )))
+                        // <img
+                        //     // width="50%"
+                        //     height="800px"
+                        //     style={{
+                        //         padding: "0 20px"
+                        //     }}
+                        //     key={p.key}
+                        //     src={p.url}></img>
+                    )
+                } else {
+                    return <ReactPlayer
+                        url={p.url}
+                        width="100%"
+                        height="100%"
+                        controls={true} />
+                }
+            }))
     }
 
     return (
