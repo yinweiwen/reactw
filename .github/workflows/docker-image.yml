@@ -38,14 +38,17 @@ jobs:
       run: docker push registry.cn-hangzhou.aliyuncs.com/yinweiwen/github:demoweb-${{ steps.version.outputs.number }}
     - name: publish on server
       uses: appleboy/ssh-action@master
+      env:
+        VERSION: ${{ steps.version.outputs.number }}
       with:
         host: ${{ secrets.ALI_HOST }}
         username: ${{ secrets.ALI_USERNAME }}
         password: ${{ secrets.ALI_SECRET }}
-        port: ${{ secrets.PORT }}
+        port: 22
+        envs: VERSION
         script: |
           whoami
           cd /root
-          sed -i 's/demoweb\-\d+$/demoweb-${{ steps.version.outputs.number }}/g' /root/docker-compose.yml 
-          sed -i 's/demoapi\-\d+$/demoapi-${{ steps.version.outputs.number }}/g' /root/docker-compose.yml 
+          sed -i 's/demoweb\-.*$/demoweb\-'"$VERSION"'/g' /root/docker-compose.yml
+          sed -i 's/demoapi\-.*$/demoapi\-'"$VERSION"'/g' /root/docker-compose.yml
           docker-compose up -d
