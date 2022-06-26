@@ -15,6 +15,29 @@ export function getGtps(query) {
     });
 }
 
+export function getGtp(gtpid) {
+    return dispatch => basicAction({
+        type: 'get',
+        dispatch: dispatch,
+        actionType: 'GET_GTP',
+        url: `${ApiTable.getGtp.replace('{gtpid}', gtpid)}`,
+        msg: { error: `获取吉他谱失败:${gtpid}` },
+        reducer: { name: 'a_gtpview' }
+    });
+}
+
+export function getGtpName(query) {
+    return dispatch => basicAction({
+        type: 'get',
+        dispatch: dispatch,
+        actionType: 'GET_GTP_NAME',
+        query: query,
+        url: `${ApiTable.getGtpName}`,
+        msg: { error: '' },
+        reducer: { name: 'gtp_repeat_names' }
+    });
+}
+
 export function getQiniuToken() {
     return dispatch => basicAction({
         type: 'get',

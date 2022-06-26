@@ -17,10 +17,10 @@ import './style.less';
 
 const qiniuUrl = 'http://guita.yinweiwen.cn/'
 
-const VideoTypes=['mp4','mov','wmv','avi','flv','avchd','mkv','f4v','swf']
+const VideoTypes = ['mp4', 'mov', 'wmv', 'avi', 'flv', 'avchd', 'mkv', 'f4v', 'swf']
 
-const JudgeIsVideo=(filename)=>{
-    return VideoTypes.includes( filename.split('.').pop().toLowerCase())
+const JudgeIsVideo = (filename) => {
+    return VideoTypes.includes(filename.split('.').pop().toLowerCase())
 }
 
 const GtpView = (props) => {
@@ -34,7 +34,8 @@ const GtpView = (props) => {
 
     // params
     const id = props.match?.params?.id
-    const { gtpview } = props.location?.state ?? {};
+    const { gv } = props.location?.state ?? {};
+    const [gtpview, setGtpview] = useState(gv);
     const [pageSize, setPageSize] = useState(2)
     const [pages, setPages] = useState([])
     const [allImages, setAllImages] = useState([])
@@ -44,10 +45,27 @@ const GtpView = (props) => {
 
     useEffect(() => {
         if (gtpview) {
+            console.log('load from state')
+            // 直接传值 props.location.state
             setPages(getContentPages(gtpview))
             setAllImages(getAllImages(gtpview))
+        } else {
+            // 通过url中params查询
+            console.log('load from remote')
+            dispatch(gtp.getGtp(id)).then(res => {
+                if (res.success) {
+                    let gv = res.payload.data;
+                    setGtpview(gv);
+                }
+            })
         }
     }, [gtpview])
+
+    useEffect(() => {
+        if (!gtpview || !gtpview.id) {
+
+        }
+    })
 
     // useEffect(() => {
     //     if (pages) {

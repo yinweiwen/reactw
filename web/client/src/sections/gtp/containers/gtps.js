@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { InfoCircleOutlined, EditOutlined, SaveOutlined, PlusOutlined, LoadingOutlined, PoweroffOutlined, DeleteOutlined } from '@ant-design/icons'
 import { connect } from 'react-redux';
-import { Spin, Tooltip, Card, Row, Col, Select, Input, Modal, Image, Upload, Drawer, Popconfirm, Button, Tag, Space, Dropdown, Form, message } from 'antd';
+import { List, Spin, Tooltip, Card, Row, Col, AutoComplete, Select, Input, Modal, Image, Upload, Drawer, Popconfirm, Button, Tag, Space, Dropdown, Form, message, Empty } from 'antd';
 import '../style.less';
 import './style.less';
 import moment from 'moment';
@@ -28,6 +28,8 @@ const GtpList = (props) => {
     const [coverImage, setCoverImage] = useState();
     const [coverLoading, setCoverLoading] = useState(false);
     const [curgtps, setCurGtps] = useState([])
+    const [nameOptions, setNameOptions] = useState([])
+    const [repeatGtp, setRepeatGtp] = useState()
 
     // 分页请求
     const [curPage, setCurPage] = useState(0)
@@ -91,6 +93,8 @@ const GtpList = (props) => {
 
     const onClose = () => {
         setVisible(false);
+        form.resetFields();
+        setNameOptions([]);
     };
 
     const delGtp = (p) => {
@@ -110,6 +114,31 @@ const GtpList = (props) => {
     // 修改操作
     function isEdit() {
         return !!gtpInfo.id
+    }
+
+    const onNameSearch = (data) => {
+        dispatch(gtp.getGtpName({ name: data })).then(res => {
+            if (res.success && res.payload?.data) {
+                setNameOptions((res.payload?.data ?? []).map(r => ({
+                    label: r.name,
+                    value: r.id,
+                })))
+            } else {
+                setNameOptions([])
+            }
+        })
+    }
+
+    const onNameSelect = (data) => {
+        console.log('selected ', data)
+        // dispatch(push(`/gtp/view/${data}`))
+        dispatch(gtp.getGtp(data)).then(res => {
+            if (res.success) {
+                setRepeatGtp(res.payload.data);
+            } else {
+                setRepeatGtp(null)
+            }
+        })
     }
 
     // 在这里做表单提交的字段修改映射
@@ -208,6 +237,16 @@ const GtpList = (props) => {
     }
 
     const customRequest = (detail) => {
+        // 根据key名称自动获取名称
+        let name = form.getFieldValue('name');
+        console.log('zzzzzzz')
+        if (!name || name === '') {
+            let sps = detail.file.name.split('/')
+            // 正则 https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Guide/Regular_Expressions
+            let suggestName = sps[sps.length - 1].replaceAll(/[\-_]*\d+\.\w+/g, '')
+            form.setFieldsValue({ name: suggestName });
+            onNameSearch(suggestName)
+        }
         dispatch(gtp.getQiniuToken()).then(res => {
             if (res.success) {
                 const token = res.payload.data.token;
@@ -330,7 +369,16 @@ const GtpList = (props) => {
                                 }
                             ]}
                         >
-                            <Input placeholder="请输入歌曲名20字以内" maxLength="20" />
+                            <AutoComplete
+                                options={nameOptions}
+                                style={{
+                                    width: 200,
+                                }}
+                                onSelect={onNameSelect}
+                                onSearch={onNameSearch}
+                                placeholder="请输入歌曲名50字以内"
+                                maxLength="50"
+                            />
                         </Form.Item>
                         <Form.Item
                             label='演奏家'
@@ -402,16 +450,38 @@ const GtpList = (props) => {
                                 <Button type="primary" htmlType="submit">
                                     提交
                                 </Button>
-                                <Button htmlType="button" onClick={() => setGtpInfo({})}>
+                                <Button htmlType="button" onClick={() => form.resetFields()}>
                                     重置
                                 </Button>
                             </Space>
                         </Form.Item>
                     </Form>
+                    {
+                        (nameOptions && nameOptions.length > 0) ? <>
+                            <p>可能是重复的选项：</p>
+                            <List
+                                size="small"
+                                bordered
+                                dataSource={nameOptions}
+                                renderItem={item => <List.Item key={item.value} onClick={() => onNameSelect(item.value)}>{item.label}</List.Item>}
+                            />
+                        </> : null
+                    }
                 </Drawer>
                 <Modal visible={previewVisible} title={previewTitle} footer={null} onCancel={handlePreviewCancel}>
                     <img alt="preview" style={{ width: '100%' }} src={previewImage} />
                 </Modal>
+                {
+                    repeatGtp ?
+                        <Image.PreviewGroup
+                            preview={{
+                                visible: true,
+                                onVisibleChange: (vis) => { if (!vis) setRepeatGtp(null); }
+                            }}
+                        >
+                            {repeatGtp.content?.map(key => (<Image key={key} src={`${qiniuUrl}${key}`}></Image>))}
+                        </Image.PreviewGroup> : null
+                }
             </>
         )
     }
@@ -437,27 +507,34 @@ const GtpList = (props) => {
                 <Button type="primary" style={{ marginLeft: "20px", marginBottom: 16, }} onClick={addGtp}>添加</Button>
             </div>
             <Spin tip='loading' spinning={loading}>
-                <Row
-                    gutter={[16, 16]}
-                >
-                    {
-                        curgtps.map(p => (
-                            <Col span={4} key={p.id}>
-                                <Card
-                                    hoverable
-                                    actions={[
-                                        <InfoCircleOutlined key='info' onClick={() => { linkToGtpView(p) }} />,
-                                        <EditOutlined key='edit' onClick={() => showInfo(p)} />
-                                    ]}
-                                    cover={<img alt="cover" src={gtpCover(p).url || 'http://guita.yinweiwen.cn/default_cover.jpg'} onClick={() => linkToGtpView(p)} />}
-                                >
-                                    <Meta title={p.name} description={p.desc} />
-                                </Card>
-                            </Col>
-                        ))
-                    }
-                </Row>
-                {((curPage + 1) * PageSize < gtpcount) ? <Button type="primary" onClick={loadMore}>加载更多</Button> : null}
+                {
+                    curgtps.length > 0 ?
+                        <>
+                            <Row
+                                gutter={[16, 16]}
+                            >
+                                {
+                                    curgtps.map(p => (
+                                        <Col span={4} key={p.id}>
+                                            <Card
+                                                hoverable
+                                                actions={[
+                                                    <InfoCircleOutlined key='info' onClick={() => { linkToGtpView(p) }} />,
+                                                    <EditOutlined key='edit' onClick={() => showInfo(p)} />
+                                                ]}
+                                                cover={<img alt="cover" src={gtpCover(p).url || 'http://guita.yinweiwen.cn/default_cover.jpg'} onClick={() => linkToGtpView(p)} />}
+                                            >
+                                                <Meta title={p.name} description={p.desc} />
+                                            </Card>
+                                        </Col>
+                                    ))
+                                }
+                            </Row>
+                            {((curPage + 1) * PageSize < gtpcount) ? <Button type="primary" onClick={loadMore}>加载更多</Button> : null}
+                        </>
+                        : <Empty />
+                }
+
                 {drawerContent(gtpInfo)}
             </Spin></>
     )
@@ -517,7 +594,7 @@ const GtpList = (props) => {
 function mapStateToProps(state) {
     const { auth, global, gtps } = state;
     const { count, rows } = gtps.data || {}
-    console.log(rows)
+    // console.log(rows)
     return {
         loading: false,
         user: auth.user,

@@ -46,6 +46,8 @@ export const ApiTable = {
 
     // gtps
     getGtps: 'gtp/list',
+    getGtpName: 'gtpname',
+    getGtp: 'gtp/{gtpid}',
     addGtp: 'gtp',
     editGtp: 'gtp/{gtpid}',
     delGtp: 'gtp/{gtpid}',

@@ -15,6 +15,8 @@ module.exports = function (app, router, opts) {
 
     router.post('/gtp', gtp.addGtp)
     router.put('/gtp/:gtpid', gtp.editGtp);
+    router.get('/gtp/:gtpid', gtp.getGtp);
+    router.get('/gtpname',gtp.repeatName);
 
     router.get('/qiniu/token', gtp.getQiniuToken);
 };

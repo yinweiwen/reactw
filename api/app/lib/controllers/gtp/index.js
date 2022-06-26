@@ -89,6 +89,51 @@ async function getQiniuToken(ctx, next) {
     }
 }
 
+async function getGtp(ctx, next) {
+    try {
+        const models = ctx.fs.dc.models;
+        const { gtpid } = ctx.params
+        ctx.body = await models.Gtps.find({
+            where: {
+                id: gtpid
+            }
+        });
+        ctx.status = 200;
+    } catch (error) {
+        ctx.fs.logger.error(`path: ${ctx.path}, error: ${error}`);
+        ctx.status = 400;
+        ctx.body = {
+            "message": "查询吉他谱失败"
+        };
+    }
+}
+
+async function repeatName(ctx, next) {
+    try {
+        const models = ctx.fs.dc.models;
+        const { name } = ctx.query;
+
+        if (!!name) {
+            const res = await models.Gtps.findAll({
+                where: {
+                    name: {
+                        $iLike: `%${name}%`
+                    }
+                },
+                limit: 5
+            })
+            ctx.body = res;
+            ctx.status = 200;
+        } else {
+            ctx.body = [];
+            ctx.status = 200;
+        }
+    } catch (error) {
+        ctx.fs.logger.error(`path: ${ctx.path}, error: ${error}`);
+        ctx.body = [];
+    }
+}
+
 async function getList(ctx, next) {
     try {
         const { fs: { api: { userInfo } } } = ctx
@@ -150,7 +195,9 @@ async function getList(ctx, next) {
 
 module.exports = {
     getList,
+    getGtp,
     addGtp,
     editGtp,
     getQiniuToken,
+    repeatName,
 };
