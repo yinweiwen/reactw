@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { InfoCircleOutlined, EditOutlined, SaveOutlined, PlusOutlined, LoadingOutlined, PoweroffOutlined, DeleteOutlined } from '@ant-design/icons'
 import { connect } from 'react-redux';
-import { List, Spin, Tooltip, Card, Row, Col, AutoComplete, Select, Input, Modal, Image, Upload, Drawer, Popconfirm, Button, Tag, Space, Dropdown, Form, message, Empty } from 'antd';
+import { Carousel, Affix, List, Spin, Tooltip, Card, Row, Col, AutoComplete, Select, Input, Modal, Image, Upload, Drawer, Popconfirm, Button, Tag, Space, Dropdown, Form, message, Empty } from 'antd';
 import '../style.less';
 import './style.less';
 import moment from 'moment';
@@ -11,7 +11,6 @@ import * as qiniu from "qiniu-js"
 import ImgCrop from 'antd-img-crop';
 // import DefaultCover from '@assets/images/avatar/1.png';
 import { push } from 'react-router-redux'
-import { useRequest } from 'ahooks';
 
 
 const qiniuUrl = 'http://guita.yinweiwen.cn/'
@@ -30,6 +29,9 @@ const GtpList = (props) => {
     const [curgtps, setCurGtps] = useState([])
     const [nameOptions, setNameOptions] = useState([])
     const [repeatGtp, setRepeatGtp] = useState()
+
+    const [isImgUploading, setIsImgUploading] = useState(false)
+    const [gtpModalView, setGtpModalView] = useState(false)
 
     // 分页请求
     const [curPage, setCurPage] = useState(0)
@@ -239,11 +241,10 @@ const GtpList = (props) => {
     const customRequest = (detail) => {
         // 根据key名称自动获取名称
         let name = form.getFieldValue('name');
-        console.log('zzzzzzz')
         if (!name || name === '') {
             let sps = detail.file.name.split('/')
             // 正则 https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Guide/Regular_Expressions
-            let suggestName = sps[sps.length - 1].replaceAll(/[\-_]*\d+\.\w+/g, '')
+            let suggestName = sps[sps.length - 1].replaceAll(/[\-_]*\d*\.\w+/g, '')
             form.setFieldsValue({ name: suggestName });
             onNameSearch(suggestName)
         }
@@ -489,40 +490,107 @@ const GtpList = (props) => {
     const linkToGtpView = (p) => {
         dispatch(push(`/gtp/view/${p.id}`, { gtpview: p }))
     }
+
+    // 全屏模态框
+    const setModalVisible = (p) => {
+        setGtpInfo(p);
+        setGtpModalView(true);
+    }
+
+    const handleModalOk = () => {
+        setGtpModalView(false)
+    }
+    const handleModalCancel = () => {
+        setGtpModalView(false)
+    }
+
+    const fullScreenModal = gtpModalView ? (
+        <Modal
+            title={gtpInfo?.name}
+            visible={gtpModalView}
+            onOk={handleModalOk}
+            onCancel={handleModalCancel}
+        >
+            <Carousel className="board" effect="fade">
+                <Image
+                    className="board"
+                    height="100%"
+                    style={{
+                        height: "200px"
+                    }} src={`${qiniuUrl}${gtpInfo.content[0]}`}></Image>
+            </Carousel>
+        </Modal>
+    ) : null;
+
+    // 折衷方案：先使用antd images previewGroup实现全屏展示
+    const getAllImages = (gtp) => {
+        if (gtp.content && Array.isArray(gtp.content) && gtp.content.length > 0) {
+            return gtp.content.map(key => ({
+                key: key,
+                url: `${qiniuUrl}${key}`
+            }))
+        } else return []
+    }
+
+    const PreviewGroup = () => {
+        if (gtpModalView && gtpInfo) {
+            return (
+                <div
+                    style={{
+                        display: 'none',
+                    }}
+                >
+                    <Image.PreviewGroup
+                        preview={{
+                            visible: gtpModalView,
+                            onVisibleChange: (vis) => setGtpModalView(vis),
+                        }}
+                    >
+                        {getAllImages(gtpInfo)?.map(img => <Image key={img.key} src={img.url}></Image>)}
+                    </Image.PreviewGroup>
+                </div>
+            )
+        } else {
+            return null;
+        }
+    }
     return (
         <>
-            <div className='search'>
-                <Input.Search
-                    placeholder="搜索歌曲名、艺术家、其他备注文本"
-                    allowClear
-                    enterButton="搜索"
-                    style={{
-                        width: 500,
-                        marginBottom: 16,
-                    }}
-                    loading={loading}
-                    onSearch={onSearch}>
+            {PreviewGroup()}
+            <Affix offsetTop={0}>
+                <div className='search'>
+                    <Input.Search
+                        placeholder="搜索歌曲名、艺术家、其他备注文本"
+                        allowClear
+                        enterButton="搜索"
+                        style={{
+                            width: 500,
+                            marginBottom: 16,
+                        }}
+                        loading={loading}
+                        onSearch={onSearch}>
 
-                </Input.Search>
-                <Button type="primary" style={{ marginLeft: "20px", marginBottom: 16, }} onClick={addGtp}>添加</Button>
-            </div>
+                    </Input.Search>
+                    <Button type="primary" style={{ marginLeft: "20px", marginBottom: 16, }} onClick={addGtp}>添加</Button>
+                </div>
+            </Affix>
             <Spin tip='loading' spinning={loading}>
                 {
                     curgtps.length > 0 ?
                         <>
                             <Row
-                                gutter={[16, 16]}
+                                gutter={[16, { xs: 8, sm: 16, md: 24, lg: 32 }]}
                             >
                                 {
                                     curgtps.map(p => (
-                                        <Col span={4} key={p.id}>
+                                        <Col xs={{ span: 24 }} sm={{ span: 12 }} lg={{ span: 4 }} key={p.id}>
                                             <Card
                                                 hoverable
                                                 actions={[
                                                     <InfoCircleOutlined key='info' onClick={() => { linkToGtpView(p) }} />,
                                                     <EditOutlined key='edit' onClick={() => showInfo(p)} />
                                                 ]}
-                                                cover={<img alt="cover" src={gtpCover(p).url || 'http://guita.yinweiwen.cn/default_cover.jpg'} onClick={() => linkToGtpView(p)} />}
+                                                cover={<img alt="cover" src={gtpCover(p).url || 'http://guita.yinweiwen.cn/default_cover.jpg'} onClick={() => setModalVisible(p)} />}
                                             >
                                                 <Meta title={p.name} description={p.desc} />
                                             </Card>
