@@ -4,3 +4,7 @@
 /api/package-lock.json
 /web/package-lock.json
 /web/tmp
+japi/.idea
+japi/target
+*.log
+web/client/assets/color.less

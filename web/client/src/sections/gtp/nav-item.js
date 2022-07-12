@@ -7,11 +7,9 @@ const SubMenu = Menu.SubMenu;
 
 export function getNavItem(user, dispatch) {
     return (
-        // <SubMenu key="gtp" icon={<ReadOutlined />} title={'吉他谱'}>
-        <Menu.Item key="gtpls">
+        <Menu.Item key="gtpls" label="吉他谱">
             <ReadOutlined />
             <Link to="/gtp"></Link>
         </Menu.Item>
-        // </SubMenu>
     );
 }
